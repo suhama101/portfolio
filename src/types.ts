@@ -9,6 +9,7 @@ export interface ResumeData {
     github: string;
     leetcode: string;
   };
+  cvUrl: string;
   summary: string;
   experience: {
     role: string;
@@ -36,12 +37,14 @@ export interface ResumeData {
     professional: {
       title: string;
       tech: string;
+      role?: string;
       links: string[];
       description: string;
     }[];
     independent: {
       title: string;
       tech: string;
+      role?: string;
       links?: string[];
       description?: string;
       achievements?: string[];
