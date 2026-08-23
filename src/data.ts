@@ -11,7 +11,7 @@ export const resumeData: ResumeData = {
     github: "https://github.com/suhama101",
     leetcode: "https://leetcode.com/u/suhama",
   },
-  cvUrl: "/Suhama.pdf",
+  cvUrl: "/Suhama_Mustafa_Full_Stack_CV.pdf",
   summary:
     "Full Stack Developer with production experience building AI-powered web applications for live government clients. Proficient in Next.js, React, Node.js, and LLM integration, with end-to-end ownership of SaaS and ML projects from design to deployment. Hackathon participant with experience applying AI solutions under real-world constraints. Currently pursuing MS Software Engineering at NUST.",
   experience: [
