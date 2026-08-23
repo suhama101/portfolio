@@ -1,11 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Briefcase,
   GraduationCap,
-  Sparkles,
   Search,
-  MessageSquare,
-  Send,
   Linkedin,
   Github,
   Award,
@@ -15,202 +12,22 @@ import {
   Layers,
   ChevronRight,
   ExternalLink,
-  Bot,
-  Copy,
   CheckCircle2,
   Mail,
   Phone,
   MapPin,
   Flame,
-  SearchCode,
   Check,
   Building2,
-  Bookmark,
-  RefreshCw,
-  HelpCircle,
   FileText,
   Download
 } from "lucide-react";
 import { resumeData } from "./data";
-import { ChatMessage, MatchResponse } from "./types";
-
-// Recommended Islamabad/Rawalpindi tech agency profiles for quick loading JDs
-const PRESET_JDS = [
-  {
-    company: "Enterprise Software Spec",
-    role: "Senior Full Stack Engineer (Next.js & Node)",
-    jd: `We are looking for a Senior Full-Stack Next.js and Node.js Developer.
-Requirements:
-- 2+ years of production experience with React.js, Next.js, TypeScript.
-- Strong Node.js/Express.js backend development skills and secure REST API design.
-- Hands-on experience optimizing database queries (MySQL/PostgreSQL).
-- Experience with Git, collaborative review tools, and government portal security constraints is a major plus.`
-  },
-  {
-    company: "AI & Automation Agency Spec",
-    role: "AI / ML Integrations Engineer",
-    jd: `Seeking a Software Engineer to design robust AI integrations and complex automations.
-Requirements:
-- Strong experience integrating LLMs (Groq, OpenAI, Gemini) into production environments.
-- Practical experience with workflow automation (n8n), LangChain, and Prompt Engineering.
-- Comfortable working in Agile teams, deploying with Vercel and cloud database infrastructure.
-- Background in research publications or MS in computer science/software engineering is preferred.`
-  },
-  {
-    company: "Platform & Dashboard Spec",
-    role: "Full Stack Developer (Next.js & Python integrations)",
-    jd: `Hiring a Full Stack Developer.
-Requirements:
-- Exceptional analytical and problem-solving skills (LeetCode/DSA).
-- Experience building elegant interactive dashboards in React, TypeScript, and Tailwind CSS.
-- Experience with Python-driven data dashboards, Streamlit, and MySQL databases.
-- Strong team player with a passion for delivering secure, client-approved prototypes.`
-  }
-];
 
 export default function App() {
   const [skillSearch, setSkillSearch] = useState("");
   const [selectedProjectTab, setSelectedProjectTab] = useState<"all" | "professional" | "independent">("all");
   
-  // Recruiter Fit Analyzer State
-  const [jdInput, setJdInput] = useState("");
-  const [isMatching, setIsMatching] = useState(false);
-  const [matchResult, setMatchResult] = useState<MatchResponse | null>(null);
-  
-  // Recruiter Chatbot State
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome-1",
-      role: "assistant",
-      text: "Hello! I am Suhama's AI Career Representative. I can share details of her work with client ISSB, her NUST MS thesis on Floyd's algorithm, her AI automation pipelines in n8n, and her readiness to join software houses in Rawalpindi & Islamabad. Ask me anything!",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
-  ]);
-  const [userInputMsg, setUserInputMsg] = useState("");
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [hasCopied, setHasCopied] = useState("");
-
-  const chatEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll chat to bottom
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages]);
-
-  const handleCopyLink = (text: string, type: string) => {
-    navigator.clipboard.writeText(text);
-    setHasCopied(type);
-    setTimeout(() => setHasCopied(""), 2000);
-  };
-
-  // Run the AI Matcher
-  const handleAnalyzeMatch = async (customJd?: string) => {
-    const jdToProcess = customJd || jdInput;
-    if (!jdToProcess.trim()) {
-      alert("Please paste a Job Description first or utilize one of our quick presets!");
-      return;
-    }
-
-    if (!customJd) {
-      setJdInput(jdToProcess);
-    }
-
-    setIsMatching(true);
-    setMatchResult(null);
-
-    try {
-      const response = await fetch("/api/match-jd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jd: jdToProcess }),
-      });
-      const data = await response.json();
-      setMatchResult(data);
-    } catch (e) {
-      console.error(e);
-      // Fallback matching logic on UI client side to ensure it never crashes
-      setMatchResult({
-        score: 88,
-        summary: "Remarkable fit. Suhama holds extensive government full-stack deployment pedigree alongside specialized AI workflow credentials, perfectly countering the key demands.",
-        positives: [
-          "Demonstrated 80% independent contribution on high-security state client portals (ISSB).",
-          "Advanced academic pedigree (NUST MS Software Engineering Candidate).",
-          "Proficient on React, Next.js, TypeScript, and robust database models."
-        ],
-        gaps: [
-          "Does not explicitly list legacy AWS deployment layers, although cloud virtualization is thoroughly mastered via coursework."
-        ],
-        questions: [
-          {
-            question: "How did you design the schedule portal for military client ISSB?",
-            response: "I developed a secure, REST API model backed by Express & Next.js to parse schedules cleanly while implementing restricted authorization walls."
-          }
-        ]
-      });
-    } finally {
-      setIsMatching(false);
-    }
-  };
-
-  // Send message to the Chatbot
-  const handleSendMessage = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!userInputMsg.trim() || isChatLoading) return;
-
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
-      text: userInputMsg,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setChatMessages((prev) => [...prev, userMsg]);
-    const cleanInput = userInputMsg;
-    setUserInputMsg("");
-    setIsChatLoading(true);
-
-    try {
-      // Collect last 6 messages as brief context
-      const miniHistory = chatMessages.slice(-6).map(m => ({
-        role: m.role,
-        content: m.text
-      }));
-
-      const response = await fetch("/api/chat-recruiter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: cleanInput,
-          history: miniHistory
-        })
-      });
-      const data = await response.json();
-
-      const assistantMsg: ChatMessage = {
-        id: `assist-${Date.now()}`,
-        role: "assistant",
-        text: data.text,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setChatMessages((prev) => [...prev, assistantMsg]);
-    } catch (err) {
-      console.error(err);
-      const fallbackMsg: ChatMessage = {
-        id: `assist-fb-${Date.now()}`,
-        role: "assistant",
-        text: "Suhama Mustafa is fully prepared for technical roles in Islamabad and Rawalpindi. She contributes directly to core Next.js & Node architectures and can speak directly at suhamamustafa1@gmail.com.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setChatMessages((prev) => [...prev, fallbackMsg]);
-    } finally {
-      setIsChatLoading(false);
-    }
-  };
-
-  const loadPresetJd = (preset: typeof PRESET_JDS[0]) => {
-    setJdInput(preset.jd);
-    handleAnalyzeMatch(preset.jd);
-  };
 
   // Match technical skills filtering logic
   const isSkillMatched = (skillName: string) => {
@@ -248,9 +65,8 @@ export default function App() {
       
       {/* Upper Announcement Bar / Islamabad Hub Badge */}
       <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-blue-800 py-2.5 px-4 text-xs font-semibold tracking-wider text-center flex flex-wrap items-center justify-center gap-3 border-b border-sky-950">
-        <span className="bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full text-[10px] uppercase border border-emerald-400/30">Immediate Hire</span>
         <span className="text-white flex items-center gap-1">
-          <MapPin size={13} className="text-emerald-300" /> Islamabad & Rawalpindi Tech Hub / Hybrid or Offshore
+          <MapPin size={13} className="text-emerald-300" /> Rawalpindi, Pakistan
         </span>
         <span className="hidden md:inline text-teal-200">|</span>
         <span className="text-teal-100 font-medium">MS Software Engineering @ NUST</span>
@@ -407,278 +223,6 @@ export default function App() {
             </div>
           </div>
         </header>
-
-        {/* RECRUITER AI LOUNGE (Dual Agent Interface) */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12" id="recruiter-ai-lounge">
-          
-          {/* LEFT SIDE (Recruiter JD Matcher - columns 7) */}
-          <div className="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between shadow-lg">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 to-sky-500"></div>
-            
-            <div>
-              {/* Header Title */}
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                    <span className="p-1 rounded bg-emerald-500/10 text-emerald-400"><SearchCode size={18} /></span>
-                    Recruiter JD Analyzer & Gap Matcher
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Paste any multinational Job Description (JD) to trace Suhama's match percentage, potential alignment values, and interview responses.
-                  </p>
-                </div>
-              </div>
-
-              {/* Presets Grid */}
-              <div className="mb-4">
-                <span className="text-xs font-semibold text-slate-400 block mb-2">Fast Load Local Presets:</span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  {PRESET_JDS.map((preset, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => loadPresetJd(preset)}
-                      className="text-left bg-slate-900 hover:bg-slate-800/80 border border-slate-800 rounded-lg p-2.5 transition-all text-xs group"
-                    >
-                      <div className="font-semibold text-slate-300 group-hover:text-emerald-400 truncate">{preset.company}</div>
-                      <div className="text-[11px] text-slate-400 truncate mt-0.5">{preset.role}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Custom Input */}
-              <div className="space-y-3">
-                <label className="text-xs font-semibold text-slate-400 block">Or Paste Your Custom JD:</label>
-                <div className="relative">
-                  <textarea
-                    value={jdInput}
-                    onChange={(e) => setJdInput(e.target.value)}
-                    placeholder="E.g., We are hiring a Full-Stack Product Developer with NextJS, robust database models, and n8n pipelines..."
-                    className="w-full h-24 bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none font-sans"
-                  />
-                  {jdInput && (
-                    <button 
-                      onClick={() => setJdInput("")}
-                      className="absolute right-2 bottom-2 text-[10px] text-slate-400 hover:text-slate-200 bg-slate-800 px-1.5 py-0.5 rounded"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Run Match CTA */}
-            <div className="mt-4 pt-3 border-t border-slate-900 flex items-center justify-between gap-4">
-              <span className="text-[11px] text-slate-400 hidden sm:inline-block">Uses structural prompt mapping for JSON scoring models</span>
-              <button
-                onClick={() => handleAnalyzeMatch()}
-                disabled={isMatching}
-                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition-all text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {isMatching ? (
-                  <>
-                    <RefreshCw size={14} className="animate-spin" /> Analyzing Fit...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles size={14} /> Analyze Technical Alignment
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Match Output Results Section */}
-            {matchResult && (
-              <div className="mt-6 bg-slate-900/80 border border-slate-800/80 rounded-xl p-4 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                
-                {/* Score Dial and Summary Block */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 border-b border-slate-800/50 pb-4">
-                  {/* Circular Score Bar */}
-                  <div className="relative h-16 w-16 flex items-center justify-center rounded-full bg-slate-950 border-2 border-slate-800 shadow-inner shrink-0">
-                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                      <path
-                        className="text-slate-800"
-                        strokeWidth="3"
-                        stroke="currentColor"
-                        fill="transparent"
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      />
-                      <path
-                        className="text-emerald-500 transition-all duration-1000"
-                        strokeWidth="3.2"
-                        strokeDasharray={`${matchResult.score}, 100`}
-                        strokeLinecap="round"
-                        stroke="currentColor"
-                        fill="transparent"
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      />
-                    </svg>
-                    <span className="text-md font-mono font-extrabold text-emerald-400 z-10">{matchResult.score}%</span>
-                  </div>
-
-                  <div>
-                    <div className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Candidate Match Performance</div>
-                    <p className="text-slate-300 text-xs leading-relaxed mt-1">{matchResult.summary}</p>
-                  </div>
-                </div>
-
-                {/* Key Alignments & Bridging gaps */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div>
-                    <span className="text-emerald-400 font-bold block mb-1.5 flex items-center gap-1">
-                      <CheckCircle2 size={13} /> Target Match Strengths:
-                    </span>
-                    <ul className="space-y-1 text-slate-300 font-sans">
-                      {matchResult.positives.map((pos, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-emerald-500 font-semibold shrink-0">•</span>
-                          <span>{pos}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <span className="text-sky-400 font-bold block mb-1.5 flex items-center gap-1">
-                      <Bookmark size={13} /> Custom Bridging Recommendation:
-                    </span>
-                    <ul className="space-y-1 text-slate-300">
-                      {matchResult.gaps.map((gap, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-sky-400 font-semibold shrink-0">•</span>
-                          <span>{gap}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Tailored Hard Questions */}
-                {matchResult.questions && matchResult.questions.length > 0 && (
-                  <div className="border-t border-slate-800/80 pt-3 space-y-3">
-                    <span className="text-xs font-mono text-slate-400 uppercase tracking-widest block flex items-center gap-1">
-                      <HelpCircle size={13} className="text-emerald-500" /> Proposed Recruiter Interview Prompts
-                    </span>
-                    
-                    {matchResult.questions.map((q, idx) => (
-                      <div key={idx} className="bg-slate-950 p-3 rounded-lg border border-slate-800/50 space-y-1">
-                        <div className="font-semibold text-slate-200 text-xs flex items-start gap-1.5">
-                          <span className="bg-emerald-950 text-emerald-400 rounded-full h-4 w-4 flex items-center justify-center text-[10px] shrink-0 font-mono mt-0.5">Q</span>
-                          <span>{q.question}</span>
-                        </div>
-                        <div className="text-slate-400 text-xs pl-5 leading-relaxed italic">
-                          <strong className="text-emerald-300/80 not-italic font-mono text-[10px] mr-1 block sm:inline-block">Suhama's Strong Response:</strong>
-                          "{q.response}"
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT SIDE (Suhama's Chatbot - columns 5) */}
-          <div className="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-lg h-[460px] lg:h-auto overflow-hidden relative">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-sky-500 to-emerald-500"></div>
-            
-            {/* Bot header info */}
-            <div>
-              <div className="flex items-center justify-between border-b border-slate-900 pb-3 mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="relative h-8 w-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                    <Bot size={16} />
-                    <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-400 border border-slate-950"></span>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-200">Suhama Mustafa AI</h4>
-                    <span className="text-[10px] text-slate-500 block">Agent Representative • Active online</span>
-                  </div>
-                </div>
-                <span className="text-[9px] bg-slate-900 text-slate-450 px-1.5 py-0.5 rounded border border-slate-800 tracking-wider">SECURE CHAT</span>
-              </div>
-            </div>
-
-            {/* Chat Messages Log Area */}
-            <div className="flex-1 overflow-y-auto space-y-3 pr-2 my-2 py-1 scrollbar-thin scrollbar-thumb-slate-800" style={{ maxHeight: "300px" }}>
-              {chatMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
-                >
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500 mb-0.5 px-1">
-                    <span className="font-semibold">{msg.role === "user" ? "Recruiter" : "Suhama's Agent"}</span>
-                    <span>•</span>
-                    <span>{msg.timestamp}</span>
-                  </div>
-                  <div
-                    className={`max-w-[90%] rounded-xl p-3 text-xs leading-relaxed ${
-                      msg.role === "user"
-                        ? "bg-emerald-600 text-slate-950 font-medium rounded-tr-none"
-                        : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tl-none font-sans"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
-
-              {isChatLoading && (
-                <div className="flex flex-col items-start">
-                  <div className="text-[10px] text-slate-500 mb-0.5">Suhama's Agent is typing...</div>
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl rounded-tl-none p-3.5 space-y-1 flex items-center gap-1 text-slate-400 text-xs">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-bounce"></span>
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-bounce [animation-delay:0.2s]"></span>
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-bounce [animation-delay:0.4s]"></span>
-                  </div>
-                </div>
-              )}
-              
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* Sample Recruiter Quick Ask buttons */}
-            <div className="py-2 flex flex-wrap gap-1.5 border-t border-slate-900">
-              <button 
-                onClick={() => setUserInputMsg("Tell me about the ISSB government client project")}
-                className="text-[10px] bg-slate-900 hover:bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-800 max-w-[200px] truncate"
-              >
-                Govt ISSB Web Prototype?
-              </button>
-              <button 
-                onClick={() => setUserInputMsg("How is she integrating LLMs & n8n AI workflows?")}
-                className="text-[10px] bg-slate-900 hover:bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-800 max-w-[200px] truncate"
-              >
-                LLM & AI Workflows?
-              </button>
-              <button 
-                onClick={() => setUserInputMsg("What is her research on Floyd's algorithm at NUST?")}
-                className="text-[10px] bg-slate-900 hover:bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-800 max-w-[200px] truncate"
-              >
-                Floyd Cycle Detection Research?
-              </button>
-            </div>
-
-            {/* Chat Input Field Form */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={userInputMsg}
-                onChange={(e) => setUserInputMsg(e.target.value)}
-                placeholder="Ask e.g. What databases does she use?"
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-sans"
-              />
-              <button
-                type="submit"
-                className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 p-2 rounded-xl transition-all h-8 w-8 flex items-center justify-center cursor-pointer font-bold shrink-0"
-                title="Send AI query"
-              >
-                <Send size={14} />
-              </button>
-            </form>
-          </div>
-        </section>
 
         {/* TECHNICAL CAPABILITY GRID AND SEARCH */}
         <section className="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 mb-12 shadow-md" id="competencies-matrix-panel">
@@ -870,13 +414,13 @@ export default function App() {
 
           </div>
 
-          {/* Special NUST tag regarding academic credentials and security vetting */}
+          {/* Additional tools listed in the CV */}
           <div className="mt-4 pt-3.5 border-t border-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400">
             <span className="flex items-center gap-1.5 text-slate-300">
-              <Briefcase size={13} className="text-emerald-400" /> Active security-cleared profiles for regional defence/government portals.
+              <Briefcase size={13} className="text-emerald-400" /> Git, GitHub, Vercel, Railway, Figma, and Canva
             </span>
             <span className="font-mono text-[11px] bg-slate-900 px-2 py-1 rounded border border-slate-850">
-              Validated Tools Stack: Git + Vercel + Railway + Supabase Integration
+              GitHub Copilot + Windsurf + n8n
             </span>
           </div>
 

@@ -153,7 +153,7 @@ export const resumeData: ResumeData = {
       status: "Under Review",
       description:
         "Analyzed effect of list size, cycle length, and start position on Floyd's algorithm; developed a predictive model to estimate detection steps with applications in graph theory and real-time systems.",
-      authors: ["Suhama Mustafa", "Hikmat Ullah Khann", "Irshad Ali", "Hadia Abu Bakar", "Anam Naz"],
+      authors: ["Suhama Mustafa", "Hikmat Ullah Khan", "Irshad Ali", "Hadia Abu Bakar", "Anam Naz"],
     },
     {
       title: "Food Distribution Application — Research Paper",
