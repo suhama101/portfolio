@@ -56,11 +56,12 @@ export interface ResumeData {
     status: string;
     description: string;
     authors: string[];
+    link?: string;
   }[];
   achievements: {
     title: string;
     period?: string;
-    link?: string;
+    links?: string[];
     description: string;
   }[];
 }

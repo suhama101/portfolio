@@ -10,7 +10,6 @@ import {
   BrainCircuit,
   Database,
   Layers,
-  ChevronRight,
   ExternalLink,
   CheckCircle2,
   Mail,
@@ -57,7 +56,7 @@ export default function App() {
     ...resumeData.projects.professional,
     ...resumeData.projects.independent,
   ].filter((project) =>
-    ["ISSB", "PAGB", "SmartHire", "AI Dashboard"].some((name) => project.title.includes(name))
+    ["ISSB", "PAGB", "SmartHire"].some((name) => project.title.includes(name))
   );
 
   return (
@@ -185,7 +184,7 @@ export default function App() {
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-300">Live Project Highlights</h2>
               <span className="rounded-full border border-emerald-800/50 bg-emerald-950/40 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-emerald-300">
-                Tech Stack + Role
+                Key Projects
               </span>
             </div>
 
@@ -204,18 +203,12 @@ export default function App() {
                     </h3>
                     <ExternalLink size={14} className="shrink-0 text-slate-500 group-hover:text-emerald-300" />
                   </div>
-                  <div className="space-y-2 text-[11px] leading-relaxed text-slate-400">
+                    <div className="text-[11px] leading-relaxed text-slate-400">
                     <div>
                       <div className="mb-1 flex items-center gap-1.5 font-mono font-semibold uppercase tracking-wider text-emerald-400">
                         <Terminal size={12} /> Tech Stack
                       </div>
                       <p>{project.tech}</p>
-                    </div>
-                    <div>
-                      <div className="mb-1 flex items-center gap-1.5 font-mono font-semibold uppercase tracking-wider text-sky-300">
-                        <Briefcase size={12} /> Role
-                      </div>
-                      <p>{project.role}</p>
                     </div>
                   </div>
                 </a>
@@ -531,15 +524,6 @@ export default function App() {
                       <span className="border-b border-slate-900/60 pb-0.5">{proj.tech}</span>
                     </div>
 
-                    {proj.role && (
-                      <div className="mb-4 rounded-lg border border-slate-800 bg-slate-900/50 p-3 text-[11px] leading-relaxed text-slate-300">
-                        <div className="mb-1 flex items-center gap-1.5 font-mono font-semibold uppercase tracking-wider text-sky-300">
-                          <Briefcase size={12} /> Role
-                        </div>
-                        <p>{proj.role}</p>
-                      </div>
-                    )}
-
                     {/* Description text */}
                     <p className="text-slate-400 text-xs leading-relaxed mb-4">
                       {"description" in proj ? proj.description : ""}
@@ -557,41 +541,11 @@ export default function App() {
                       </ul>
                     )}
 
-                    {/* Special outcomes specific to her work */}
-                    {proj.title.includes("ISSB") && (
-                      <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-850/40 text-[11px] text-slate-350 space-y-1">
-                        <strong className="text-emerald-400 block font-semibold">Production Deliverables:</strong>
-                        <div className="flex items-center justify-between">
-                          <span>• Independent Stack Weight:</span>
-                          <span className="font-mono text-slate-100 font-bold">80%+ (Full-Stack Engine)</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>• Target Modules:</span>
-                          <span className="text-slate-200">Candidate verification portal, Schedules, Contact routing</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {proj.title.includes("PAGB") && (
-                      <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-850/40 text-[11px] text-slate-350 space-y-1">
-                        <strong className="text-teal-400 block font-semibold">Production Deliverables:</strong>
-                        <div className="flex items-center justify-between">
-                          <span>• Deployed Live Modules:</span>
-                          <span className="font-mono text-slate-100 font-bold">3+ Core Active Stacks</span>
-                        </div>
-                        <div className="text-slate-400 text-[10px] italic pt-1">
-                          Platform is live at pagb.org.pk representing military research publications.
-                        </div>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Visual card footer showing repository weight or tags */}
                   <div className="mt-5 pt-3.5 border-t border-slate-900 flex items-center justify-between text-slate-500 text-[11px]">
-                    <span className="flex items-center gap-1">
-                      <CheckCircle2 size={11} className="text-emerald-500" /> Fully approved by client stakeholders
-                    </span>
-                    <span className="font-mono uppercase text-[9px] tracking-widest text-slate-400">Next + Node</span>
+                    <span className="text-slate-400">{isGov ? "Professional Project" : "Independent Project"}</span>
+                    <CheckCircle2 size={14} className="text-emerald-500" />
                   </div>
 
                 </div>
@@ -733,7 +687,7 @@ export default function App() {
                           }`}>
                             {res.status}
                           </span>
-                          <span className="text-[10px] text-slate-500 font-mono text-right">{isSpringer ? "Springer Indexed" : "Ref Journal"}</span>
+                          <span className="text-[10px] text-slate-500 font-mono text-right">{isSpringer ? "Research Paper" : "Ref Journal"}</span>
                         </div>
 
                         <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wide leading-relaxed">
@@ -752,29 +706,25 @@ export default function App() {
                           <strong className="text-slate-400 font-bold block mb-0.5 text-[9px] uppercase tracking-widest">Co-authors:</strong>
                           {res.authors.join(", ")}
                         </div>
+
+                        {res.link && (
+                          <a href={res.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 hover:text-emerald-300">
+                            Visit challenge <ExternalLink size={11} />
+                          </a>
+                        )}
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Research stats footer */}
-              <div className="bg-slate-900/40 border border-slate-850 p-3.5 rounded-xl text-xs text-slate-400 mt-5 space-y-1">
-                <div className="flex justify-between items-center text-[11px]">
-                  <span>Forecasting Error metric:</span>
-                  <strong className="text-slate-200">ARIMA: MAE 4.1, MAPE 5.8%</strong>
-                </div>
-                <div className="text-[10px] italic text-slate-500">
-                  Targeted solution outperforms SARIMA, Prophet and standard LSTM architectures.
-                </div>
-              </div>
             </div>
 
-            {/* HONOURS & ACHIEVEMENTS TIMELINE EXTRA */}
+            {/* HONOURS & ACHIEVEMENTS */}
             <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-md">
               <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2 mb-4">
                 <span className="p-1 rounded bg-amber-500/10 text-amber-400"><Award size={17} /></span>
-                Hackathons & DSA Solver
+                Achievements & Extracurricular
               </h3>
 
               <div className="space-y-4">
@@ -793,17 +743,22 @@ export default function App() {
                       </p>
                     </div>
 
-                    {ach.link && (
+                    {ach.links && ach.links.length > 0 && (
                       <div className="mt-3.5 pt-2 border-t border-slate-900/60 flex items-center justify-between">
-                        <span className="text-[9px] text-slate-500 uppercase tracking-wider">Devpost / Online link available</span>
-                        <a 
-                          href={ach.link} 
-                          target="_blank" 
-                          rel="noreferrer" 
-                          className="text-[10.5px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 font-mono transition-colors"
-                        >
-                          Verify Event <ChevronRight size={11} />
-                        </a>
+                        <span className="text-[9px] text-slate-500 uppercase tracking-wider">Related links</span>
+                        <div className="flex items-center gap-3">
+                          {ach.links.map((link, linkIndex) => (
+                            <a
+                              key={linkIndex}
+                              href={link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[10.5px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 font-mono transition-colors"
+                            >
+                              Open <ExternalLink size={11} />
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
