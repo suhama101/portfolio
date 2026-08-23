@@ -2,7 +2,7 @@ import { ResumeData } from "./types";
 
 export const resumeData: ResumeData = {
   name: "Suhama Mustafa",
-  title: "Full Stack Developer | AI-Driven Development",
+  title: "Full Stack Developer | Next.js • React • Node.js | AI/LLM Integrations",
   email: "suhamamustafa1@gmail.com",
   phone: "+92 344 1272583",
   location: "Rawalpindi, Pakistan",

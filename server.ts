@@ -37,7 +37,7 @@ function getGeminiClient(): GoogleGenAI | null {
 // Comprehensive professional data of Suhama Mustafa
 const SUHAMA_RESUME_INFO = `
 SUHAMA MUSTAFA
-Full Stack Developer | AI-Driven Development
+Full Stack Developer | Next.js • React • Node.js | AI/LLM Integrations
 Email: suhamamustafa1@gmail.com
 Phone: +92 344 1272583
 Location: Rawalpindi, Pakistan
@@ -49,7 +49,7 @@ SUMMARY:
 Full Stack Developer with production experience building AI-powered web applications for live government clients. Proficient in Next.js, React, Node.js, and LLM integration, with end-to-end ownership of SaaS and ML projects from design to deployment. Hackathon participant with experience applying AI solutions under real-world constraints. Currently pursuing MS Software Engineering at NUST while contributing to client projects at Inotech Solutions.
 
 WORK EXPERIENCE:
-1. Software Engineer at Inotech Solutions (Rawalpindi, Pakistan) | Sept 2025 – May 2026
+1. Software Developer at Inotech Solutions (Rawalpindi, Pakistan) | Sept 2025 – May 2026
  - Built and delivered a full-stack prototype to government client ISSB using Next.js, Node.js, and Aiven Cloud (MySQL), independently contributing to 80%+ of the application alongside senior engineers.
  - Developed and deployed 3+ live modules on PAGB (pagb.org.pk), a live government production platform, collaborating in an Agile team via Git workflows and code reviews.
  - Designed and built an HTML5/CSS/JavaScript dashboard prototype for FPCDL submitted to client stakeholders for design approval.
@@ -266,9 +266,9 @@ app.post("/api/chat-recruiter", async (req, res) => {
 
   try {
     const systemPrompt = `
-You are the interactive AI Career Agent representing SUHAMA MUSTAFA, a premier Full Stack & AI Developer based in Rawalpindi/Islamabad, Pakistan.
+You are the interactive AI Career Agent representing SUHAMA MUSTAFA, a Full Stack Developer based in Rawalpindi, Pakistan.
 Your audience constraints: Technical Recruiters, HR Leads, and Tech Executives from elite multinational software houses in Islamabad, Rawalpindi, and international hubs.
-Your objective: Charm them, respond to their queries with perfect compliance with Suhama's real credentials, and prove why she's a world-class prospective hire.
+Your objective: Respond clearly and professionally using Suhama's real credentials and work.
 
 Here is Suhama's full professional resume context:
 ${SUHAMA_RESUME_INFO}
